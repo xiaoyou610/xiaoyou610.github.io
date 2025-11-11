@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>拼夕夕助力系统</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Microsoft YaHei", sans-serif; }
+        body { 
+            background-color: #f5f5f5; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh; 
+        }
+        .container { 
+            width: 90%; 
+            max-width: 600px; 
+            background: #fff; 
+            padding: 30px 25px; 
+            border-radius: 8px; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05); 
+        }
+        h1 { 
+            color: #e02020; 
+            text-align: center; 
+            margin-bottom: 30px; 
+            font-size: 24px; 
+            font-weight: bold; 
+        }
+        .form-group { 
+            margin-bottom: 22px; 
+        }
+        input[type="text"], select { 
+            width: 100%; 
+            padding: 14px 16px; 
+            border: 1px solid #ffd166; 
+            border-radius: 4px; 
+            font-size: 16px; 
+            background: #fff; 
+            color: #333; 
+        }
+        input[type="text"]::placeholder { color: #999; }
+        /* 图片上传样式 */
+        .upload-container {
+            position: relative;
+            width: 100%;
+        }
+        .upload-btn {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px dashed #ffd166;
+            border-radius: 4px;
+            font-size: 16px;
+            color: #e02020;
+            background: #fff8e6;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .upload-btn:hover {
+            background: #fff3cd;
+        }
+        .upload-input {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+        .file-preview {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #666;
+        }
+        /* 按钮样式 */
+        .btn-group { text-align: center; margin: 30px 0 25px; }
+        button { 
+            padding: 12px 24px; 
+            border: none; 
+            border-radius: 4px; 
+            font-size: 16px; 
+            font-weight: 500; 
+            cursor: pointer; 
+            margin: 0 8px; 
+            transition: all 0.2s; 
+        }
+        .btn-primary { 
+            background: #e02020; 
+            color: #fff; 
+        }
+        .btn-primary:hover { background: #c8102e; }
+        .btn-secondary { 
+            background: #ffd166; 
+            color: #333; 
+        }
+        .btn-secondary:hover { background: #ffc13b; }
+        .btn-reset { 
+            background: #f5f5f5; 
+            color: #666; 
+            border: 1px solid #ddd; 
+        }
+        .btn-reset:hover { background: #eee; }
+        /* 底部行 */
+        .bottom-line { 
+            text-align: center; 
+            padding-top: 15px; 
+            border-top: 1px solid #f0f0f0; 
+            color: #999; 
+            font-size: 14px; 
+        }
+        /* 弹窗样式 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: #fff;
+            width: 85%;
+            max-width: 500px;
+            border-radius: 8px;
+            padding: 25px;
+            position: relative;
+        }
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 24px;
+            color: #999;
+            cursor: pointer;
+        }
+        .close-modal:hover { color: #e02020; }
+        .modal-title {
+            color: #e02020;
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .modal-desc {
+            color: #333;
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        /* 收款码容器 */
+        .qrcode-container {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+        }
+        .qrcode-item {
+            text-align: center;
+            width: 45%;
+        }
+        .qrcode-img {
+            width: 100%;
+            height: auto;
+            border: 1px solid #eee;
+            border-radius: 4px;
+        }
+        .qrcode-text {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #666;
+        }
+        .purchase-notice {
+            background: #fff8e6;
+            border-left: 4px solid #ffd166;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 4px;
+        }
+        .purchase-notice h4 {
+            color: #e02020;
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+        .purchase-notice p {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.5;
+        }
+        /* 费用提示样式 */
+        .fee-notice {
+            text-align: center;
+            margin: 15px 0;
+            color: #e02020;
+            font-weight: 500;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>拼多多助力系统</h1>
+        
+        <div class="form-group">
+            <input type="text" id="linkInput" placeholder="请输入助力链接/手机号">
+        </div>
+        
+        <div class="form-group">
+            <select id="typeSelect">
+                <option value="">请选择助力类型</option>
+                <option value="1">拼夕夕助力</option>
+                <option value="2">块瘦助力</option>
+                <option value="3">斗音助力</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <select id="numSelect" onchange="showFee()">
+                <option value="">请选择助力人数</option>
+                <option value="10">10人❤️(真人助力）</option>
+                <option value="30">30人❤️(真人助力）</option>
+                <option value="50">50人❤️(真人助力）</option>
+                <option value="80">80人❤️(真人助力）</option>
+                <option value="100">100人❤️(真人助力）</option>
+            </select>
+        </div>
+        
+        <!-- 费用提示区域 -->
+        <div class="fee-notice" id="feeNotice">请选择助力人数查看费用</div>
+        
+        <div class="form-group">
+            <div class="upload-container">
+                <label class="upload-btn">
+                    📷 上传助力截图（拍照/选相册）
+                    <input type="file" id="imgUpload" class="upload-input" accept="image/*" capture="environment">
+                </label>
+            </div>
+            <div class="file-preview" id="filePreview">未选择文件</div>
+        </div>
+        
+        <div class="btn-group">
+            <button class="btn-primary" onclick="checkForm()">开始助力</button>
+            <button class="btn-secondary" onclick="jumpToQQ()">联系客服</button>
+            <button class="btn-reset" onclick="resetUpload()">重置信息</button>
+        </div>
+        
+        <div class="bottom-line">
+            使用须知：此功能仅供学习交流，请勿用于违法行为
+        </div>
+    </div>
+
+    <!-- 未完善信息弹窗 -->
+    <div class="modal" id="warningModal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('warningModal')">&times;</span>
+            <h3 class="modal-title">⚠️ 信息未完善</h3>
+            <p class="modal-desc">请先填写助力链接/手机号、选择助力类型和人数，并上传助力截图，再点击开始助力~</p>
+        </div>
+    </div>
+
+    <!-- 完成信息弹窗（替换为目标收款码图片） -->
+    <div class="modal" id="successModal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('successModal')">&times;</span>
+            <h3 class="modal-title">✅ 助力申请已提交</h3>
+            <p class="modal-desc" id="feeDesc">请选择以下收款码完成支付，支付后将立即启动助力服务</p>
+            
+            <div class="qrcode-container">
+                <!-- 第一张目标图片：替换为微信收款码 -->
+                <div class="qrcode-item">
+                    <img src="https://i.imgs.ovh/2025/11/11/C7vNFc.jpeg" alt="微信收款码" class="qrcode-img">
+                    <p class="qrcode-text">微信支付</p>
+                </div>
+                <!-- 第二张目标图片：替换为支付宝收款码 -->
+                <div class="qrcode-item">
+                    <img src="https://i.imgs.ovh/2025/11/11/C7vwnm.jpeg" alt="支付宝收款码" class="qrcode-img">
+                    <p class="qrcode-text">支付宝支付</p>
+                </div>
+            </div>
+            
+            <div class="purchase-notice">
+                <h4>购买事项说明</h4>
+                <p>1. ❗长按即可保存图片，请自行到相应软件支付；</p>
+                <p>2. 支付完成后请等待1-5分钟，助力将自动执行；</p>
+                <p>3. 若支付后未启动助力，请联系客服核实</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 监听文件选择
+        const uploadInput = document.getElementById('imgUpload');
+        const filePreview = document.getElementById('filePreview');
+        
+        uploadInput.addEventListener('change', function(e) {
+            if (this.files.length > 0) {
+                const fileName = this.files[0].name;
+                filePreview.textContent = `已选择：${fileName}`;
+                filePreview.style.color = '#e02020';
+            }
+        });
+        
+        // 显示对应费用
+        function showFee() {
+            const numSelect = document.getElementById('numSelect');
+            const feeNotice = document.getElementById('feeNotice');
+            const selectedValue = numSelect.value;
+            let fee = '';
+            
+            switch(selectedValue) {
+                case '10':
+                    fee = '3.33元';
+                    break;
+                case '30':
+                    fee = '5.55元';
+                    break;
+                case '50':
+                    fee = '7.77元';
+                    break;
+                case '80':
+                    fee = '12.99元';
+                    break;
+                case '100':
+                    fee = '20.00元';
+                    break;
+                default:
+                    fee = '请选择助力人数查看费用';
+            }
+            
+            feeNotice.textContent = `当前选择助力人数的费用为：${fee}`;
+        }
+        
+        // 表单校验
+        function checkForm() {
+            const link = document.getElementById('linkInput').value.trim();
+            const type = document.getElementById('typeSelect').value;
+            const num = document.getElementById('numSelect').value;
+            const img = uploadInput.files.length;
+            const feeDesc = document.getElementById('feeDesc');
+            
+            if (!link || !type || !num || !img) {
+                document.getElementById('warningModal').style.display = 'flex';
+            } else {
+                // 获取当前费用并更新弹窗描述
+                const selectedValue = document.getElementById('numSelect').value;
+                let fee = '';
+                switch(selectedValue) {
+                    case '10':
+                        fee = '3.33元';
+                        break;
+                    case '30':
+                        fee = '5.55元';
+                        break;
+                    case '50':
+                        fee = '7.77元';
+                        break;
+                    case '80':
+                        fee = '12.99元';
+                        break;
+                    case '100':
+                        fee = '20.00元';
+                        break;
+                }
+                feeDesc.textContent = `请选择以下收款码支付❗${fee}❗，支付后将立即启动助力服务`;
+                document.getElementById('successModal').style.display = 'flex';
+            }
+        }
+        
+        // 关闭弹窗
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+        
+        // 重置所有信息
+        function resetUpload() {
+            uploadInput.value = '';
+            filePreview.textContent = '未选择文件';
+            filePreview.style.color = '#666';
+            document.getElementById('linkInput').value = '';
+            document.getElementById('typeSelect').selectedIndex = 0;
+            document.getElementById('numSelect').selectedIndex = 0;
+            document.getElementById('feeNotice').textContent = '请选择助力人数查看费用';
+        }
+        
+        // 点击弹窗外部关闭弹窗
+        window.onclick = function(e) {
+            if (e.target.classList.contains('modal')) {
+                e.target.style.display = 'none';
+            }
+        }
+        
+        // 跳转QQ加好友（替换为指定QQ号）
+        function jumpToQQ() {
+            const targetQQ = '3959287493';
+            window.open(`https://wpa.qq.com/msgrd?v=3&uin=${targetQQ}&site=qq&menu=yes`, '_blank');
+        }
+    </script>
+</body>
+</html>
